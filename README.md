@@ -1,6 +1,10 @@
 # pi_zero
-This repo is mostly a collection of tutorials 
-![alt tag](https://raw.githubusercontent.com/avirtuos/ros_hercules/master/doc/img/rover_slam.gif)
+This repo is mostly a collection of tutorials built around the raspberry pi zero.
+
+![alt tag](https://raw.githubusercontent.com/avirtuos/pi_zero/master/doc/img/pi_zero_pinout.jpg)
+
+# Pi Zero... Pros... & Cons...
+
 
 # Pi Zero Setup
 
