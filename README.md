@@ -1,10 +1,24 @@
 # pi_zero
 This repo is mostly a collection of tutorials built around the raspberry pi zero.
 
-![alt tag](https://raw.githubusercontent.com/avirtuos/pi_zero/master/doc/img/pi_zero_pinout.jpg)
+<center>![alt tag](https://raw.githubusercontent.com/avirtuos/pi_zero/master/doc/img/pi_zero_pinout.jpg)</center>
 
-# Pi Zero... Pros... & Cons...
+# The Good, The Bag, & The Fugly
 
+Like most
+### Pros
+
+
+# Parts List
+
+Here you can find all the parts used throughout these tutorials, I've tried to mark the ones that are required for the basics vs ones for special projects.
+
+* <a href='https://www.amazon.com/Adapter-Samusung-Android-Windows-Function/dp/B00LN3LQKQ'>A USB OTG Cable (~$5)</a> - Required For All Tutorials
+* <a href='https://www.amazon.com/Sabrent-4-Port-Individual-Switches-HB-UMLS/dp/B00BWF5U0M'>A USB Hub (~$7)</a> - Required For All Tutorials but may not be needed after initial configuration.
+* <a href='https://www.amazon.com/Edimax-EW-7811Un-150Mbps-Raspberry-Supports/dp/B003MTTJOY'>USB Wifi Dongle (~$9)</a> - Networked Projects Only
+* <a href='https://www.amazon.com/Rii-Wireless-Keyboard-mini-X1/dp/B00I5SW8MC'>USB Keyboard (~$17)</a> - Required for initial setup. I prefer this small one because I use it for many projects just to get SSH up and running then I use my regulard computer.
+* <a href='https://www.amazon.com/gp/product/B00MU2YPXO'>Mini HDMI to Female HDMI (~$10)</a> - Required for initial setup unless the project drives a display continually.
+* <a href='https://www.amazon.com/gp/product/B01DIGRR8U'>9-Axis Accelorometer / Gyroscope / Compage (~$15)</a> - Used for Robotic Telemetry Tutorial
 
 # Pi Zero Setup
 
@@ -32,15 +46,86 @@ You can do this by editing /etc/network/interfaces via the following command:
 
 You may need to edit your keyboard mappings if you notice that the double quotes you type show up as @-signs. This can be done by running `sudo dpkg-reconfigure keyboard-configuration` and following the instructions to switch to a US keyboard. This will mostly likely require a reboot to take affect fully (it did for me).
 
+Now that you have your keyboard working, you can edit your interfaces file to look something like the below. 
+
+<pre>
+source-directory /etc/network/interfaces.d
+
+auto lo
+iface lo inet loopback
+
+iface eth0 inet manual
+
+allow-hotplug wlan0
+auto wlan0
+
+iface wlan0 inet static
+        wpa-ssid "your_ssid_here"
+        wpa-psk "your_password_here"
+        address 192.168.1.139
+        netmask 255.255.255.0
+        gateway 192.168.1.1
+</pre>
+
+Now you can reload your networking services to see if the changes worked. You can do this by running the following command `sudo service networking reload`
+
+Now lets see if your network interface came up as expected. You can do this by running `ifconfig`, if it worked your should see wlan0 with a valid IP Address like the one below.
+
+<pre>
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+wlan0     Link encap:Ethernet  HWaddr 74:da:38:83:c1:47
+          inet addr:192.168.1.139  Bcast:192.168.1.255  Mask:255.255.255.0
+          inet6 addr: fe80::76da:38ff:fe83:c147/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:14071 errors:0 dropped:148 overruns:0 frame:0
+          TX packets:1602 errors:0 dropped:1 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:7283899 (6.9 MiB)  TX bytes:200898 (196.1 KiB)
+</pre>
+
+Now lets install ssh by running `sudo apt-get install ssh`. Once this completes, you should be able to ssh to your pi from another machine.
+
+## Step 4 - i2c Setup
+
+Since many of our sensors and tutorials will make use of I2C, lets setup i2c and get it out of the way.
+
+Start by enabling the i2c kernel module via `sudo raspi-config`. Once the menu loads, go to Advanded Options (7) and then A6 I2C and then 'Yes' to enable it.
+
+Next, you'll want to install some handy i2c command line tools via `sudo apt-get install i2c-tools`
+
+Now lets see if the i2c Kernel module is installed correctly by asking the Pi to probe the I2c bus for any available devices. Remeber, i2c allows multiple devices to communicate with the master (your pi) over the same 2 wires. The following command will tell us if any devices are present (there shouldn't be any since we haven't wired any yet).
+
+`sudo i2cdetect -y 1`
+
+<pre>
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:          -- -- -- -- -- -- -- -- -- -- -- -- --
+10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+70: -- -- -- -- -- -- -- --
+</pre>
 
 
-# Parts List
+## Step 5 - MPU-9255, An i2c 9-Axis Accelerometer + Compass
 
-Here you can find all the parts used throughout these tutorials, I've tried to mark the ones that are required for the basics vs ones for special projects.
+In this step we will wire up our MPU-9255 9-Axis Accelerometer & Compass. Then we will re-run our i2c probe command and start querying our new i2c device.
 
-* <a href='https://www.amazon.com/Adapter-Samusung-Android-Windows-Function/dp/B00LN3LQKQ'>A USB OTG Cable (~$5)</a> - Required For All Tutorials
-* <a href='https://www.amazon.com/Sabrent-4-Port-Individual-Switches-HB-UMLS/dp/B00BWF5U0M'>A USB Hub (~$7)</a> - Required For All Tutorials but may not be needed after initial configuration.
-* <a href='https://www.amazon.com/Edimax-EW-7811Un-150Mbps-Raspberry-Supports/dp/B003MTTJOY'>USB Wifi Dongle (~$9)</a> - Networked Projects Only
-* <a href='https://www.amazon.com/Rii-Wireless-Keyboard-mini-X1/dp/B00I5SW8MC'>USB Keyboard (~$17)</a> - Required for initial setup. I prefer this small one because I use it for many projects just to get SSH up and running then I use my regulard computer.
-* <a href='https://www.amazon.com/gp/product/B00MU2YPXO'>Mini HDMI to Female HDMI (~$10)</a> - Required for initial setup unless the project drives a display continually.
+Here is an image of how to <a href='wire up both the pi and the accelerometer.
 
+<center>![alt tag](https://raw.githubusercontent.com/avirtuos/pi_zero/master/doc/img/pi_zero_pinout_zoom.png)</center>
+
+And here is our finished product.
+
+<center>![alt tag](https://raw.githubusercontent.com/avirtuos/pi_zero/master/doc/img/pi_zero_i2c.jpg)</center>
