@@ -5,9 +5,20 @@ This repo is mostly a collection of tutorials built around the raspberry pi zero
 
 # The Good, The Bag, & The Fugly
 
-Like most
-### Pros
+Like most people, I'm a fan of the Raspberry Pi Foundation and what they are trying to do, but also like most people... I'm forever wanting more from the Pi. I actually think its rather cripiling that they don't include wifi in every model given how connected our world has become...but thats a topic for another time.
 
+### Pros
+- Power Consumption can be as low as 80mah idle.
+- Plentiful GPIO
+- $5 bucks!!!, though you'll need some peripherals to get started.
+- Full-ish Linux Ecosystem, unlike Arduino or EPS8266 (though that isn't a fair comparison)
+- Excellent form factor
+
+### Cons
+- Requires a few peripherals, so its not really $5 but more like $15 - $20.
+- No built in wifi
+- Requires a mico-sd card, no built in storage
+- Really tough to find, though MicroCenter seems to have plenty if you are lucky enough to have one near by like me. :)
 
 # Parts List
 
@@ -19,6 +30,10 @@ Here you can find all the parts used throughout these tutorials, I've tried to m
 * <a href='https://www.amazon.com/Rii-Wireless-Keyboard-mini-X1/dp/B00I5SW8MC'>USB Keyboard (~$17)</a> - Required for initial setup. I prefer this small one because I use it for many projects just to get SSH up and running then I use my regulard computer.
 * <a href='https://www.amazon.com/gp/product/B00MU2YPXO'>Mini HDMI to Female HDMI (~$10)</a> - Required for initial setup unless the project drives a display continually.
 * <a href='https://www.amazon.com/gp/product/B01DIGRR8U'>9-Axis Accelorometer / Gyroscope / Compage (~$15)</a> - Used for Robotic Telemetry Tutorial
+
+# Tutorials
+
+- MPU-9255 - 9-Axis Accelerometer w/Compass via i2c from Python.
 
 # Pi Zero Setup
 
@@ -93,39 +108,3 @@ wlan0     Link encap:Ethernet  HWaddr 74:da:38:83:c1:47
 
 Now lets install ssh by running `sudo apt-get install ssh`. Once this completes, you should be able to ssh to your pi from another machine.
 
-## Step 4 - i2c Setup
-
-Since many of our sensors and tutorials will make use of I2C, lets setup i2c and get it out of the way.
-
-Start by enabling the i2c kernel module via `sudo raspi-config`. Once the menu loads, go to Advanded Options (7) and then A6 I2C and then 'Yes' to enable it.
-
-Next, you'll want to install some handy i2c command line tools via `sudo apt-get install i2c-tools`
-
-Now lets see if the i2c Kernel module is installed correctly by asking the Pi to probe the I2c bus for any available devices. Remeber, i2c allows multiple devices to communicate with the master (your pi) over the same 2 wires. The following command will tell us if any devices are present (there shouldn't be any since we haven't wired any yet).
-
-`sudo i2cdetect -y 1`
-
-<pre>
-     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
-00:          -- -- -- -- -- -- -- -- -- -- -- -- --
-10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-70: -- -- -- -- -- -- -- --
-</pre>
-
-
-## Step 5 - MPU-9255, An i2c 9-Axis Accelerometer + Compass
-
-In this step we will wire up our MPU-9255 9-Axis Accelerometer & Compass. Then we will re-run our i2c probe command and start querying our new i2c device.
-
-Here is an image of how to <a href='wire up both the pi and the accelerometer.
-
-<center>![alt tag](https://raw.githubusercontent.com/avirtuos/pi_zero/master/doc/img/pi_zero_pinout_zoom.png)</center>
-
-And here is our finished product.
-
-<center>![alt tag](https://raw.githubusercontent.com/avirtuos/pi_zero/master/doc/img/pi_zero_i2c.jpg)</center>
