@@ -33,7 +33,7 @@ Here you can find all the parts used throughout these tutorials, I've tried to m
 
 # Tutorials
 
-- MPU-9255 - 9-Axis Accelerometer w/Compass via i2c from Python.
+- <a href='https://github.com/avirtuos/pi_zero/tree/master/mpu-9255'>MPU-9255 Tutorial</a> - 9-Axis Accelerometer w/Compass via i2c from Python.
 
 # Pi Zero Setup
 
