@@ -1,6 +1,12 @@
 # MPU-9255
 This is a tutorial for how to access data from the MPU-9255 IMU with 9-axis accelerometer and compass.
 
+## Parts List
+
+* <a href='https://www.amazon.com/gp/product/B01DIGRR8U'>9-Axis Accelorometer / Gyroscope / Compage (~$15)</a> - Used for Robotic Telemetry Tutorial
+* <a href='https://www.amazon.com/gp/product/B00NAB8VQG'>4 Pin Connectors (~$9)</a> - for clean connections between IMU and Pi Zero
+* <a href='https://www.amazon.com/Soldering-SOAIY-Adjustable-Temperature-Desoldering/dp/B01C9P7HDQ'>Soldering Iron (~19)</a>
+
 ## Step 1 - i2c Setup
 
 Since many of our sensors and tutorials will make use of I2C, lets setup i2c and get it out of the way.
