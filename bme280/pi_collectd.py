@@ -13,9 +13,11 @@ nodeName = "pi-139 bme"
 rrdPath = "/home/pi/data/"
 rrdName = "bme280.rrd"
 graphName = "bme280.png"
-awsAccessKey = "ACCESS_KEY_HERE"
-awsSecretKey = "SECRET_KEY_HERE"
-awsS3Bucket = "BUCKET_HERE"
+
+awsS3Key = "images/pi_139_bme280.png"
+awsAccessKey = os.environ['AWS_ACCESS_KEY']
+awsSecretKey = os.environ['AWS_SECRETE_KEY']
+awsS3Bucket = os.environ['AWS_BUCKET']
 awsS3Key = "images/pi_139_bme280.png"
 
 rrdFile = rrdPath + rrdName
