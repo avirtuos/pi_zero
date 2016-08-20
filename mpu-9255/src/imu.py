@@ -41,11 +41,19 @@ imu.setCompassEnable(True)
    
 poll_interval = imu.IMUGetPollInterval()  
    
+prev = time.time() 
+data = dict()
 while True:  
   hack = time.time()  
 
   if imu.IMURead():  
     data = imu.getIMUData()  
-    print data
+  
+  if hack - prev > 1:
+    prev = hack
+    #print "compass:", data['compass']
+    print "gyro", data['gyro']
+    #print "accel", data['accel']
   
   time.sleep(poll_interval*1.0/1000.0)
+
