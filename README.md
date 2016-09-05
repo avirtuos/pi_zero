@@ -30,10 +30,12 @@ Here you can find all the parts used throughout these tutorials, I've tried to m
 * <a href='https://www.amazon.com/Rii-Wireless-Keyboard-mini-X1/dp/B00I5SW8MC'>USB Keyboard (~$17)</a> - Required for initial setup. I prefer this small one because I use it for many projects just to get SSH up and running then I use my regulard computer.
 * <a href='https://www.amazon.com/gp/product/B00MU2YPXO'>Mini HDMI to Female HDMI (~$10)</a> - Required for initial setup unless the project drives a display continually.
 * <a href='https://www.amazon.com/gp/product/B01DIGRR8U'>9-Axis Accelorometer / Gyroscope / Compage (~$15)</a> - Used for Robotic Telemetry Tutorial
+* <a href='https://www.amazon.com/Diymall-Pressure-Temperature-Sensor-Arduino/dp/B0118XCKTG'>BME280 Temperature, Pressure, and Humidity (~$9) - Used for BME280 Tutorial, a Pi Zero IOT Platform w/AWS</a>
 
 # Tutorials
 
 - <a href='https://github.com/avirtuos/pi_zero/tree/master/mpu-9255'>MPU-9255 Tutorial</a> - 9-Axis Accelerometer w/Compass via i2c from Python.
+- <a href='https://github.com/avirtuos/pi_zero/tree/master/bme280'>BME280 Tutorial</a> - Pi Zero IO Platform using RRDTool and AWS S3 to log and graph Temperature, Pressure, and Humidity.
 
 # Pi Zero Setup
 
