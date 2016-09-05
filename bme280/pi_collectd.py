@@ -20,14 +20,17 @@ nodeName = os.environ['NODE_NAME']
 rrdPath = "/home/pi/data/"
 rrdName = "bme280.rrd"
 graphName = "bme280.png"
+detailedGraphName = "bme280_detailed.png"
 
 awsS3Key = "images/" + nodeName +".png"
+awsS3KeyDetailed = "images/" + nodeName + "_detailed.png"
 awsAccessKey = os.environ['AWS_ACCESS_KEY']
 awsSecretKey = os.environ['AWS_SECRETE_KEY']
 awsS3Bucket = os.environ['AWS_BUCKET']
 
 rrdFile = rrdPath + rrdName
 graphPath = rrdPath + graphName
+detailedGraphPath = rrdPath + detailedGraphName
 
 data_sources = ['DS:temperature:GAUGE:600:U:U',
                 'DS:humidity:GAUGE:600:U:U',
@@ -57,6 +60,7 @@ def getOrCreateRrd():
                 'RRA:AVERAGE:0.5:360:40000')
 
 def updateGraph(lastUpdated, awsS3Bucket, awsS3Key, graphPath):
+	global temperature, pressure, humidity
 	if(time.time() - lastUpdated > 300):
 		logger.info("Updating Graph...")
 		rrdtool.graph(graphPath,
@@ -66,12 +70,13 @@ def updateGraph(lastUpdated, awsS3Bucket, awsS3Key, graphPath):
 	            '--start', "-2592000",
 	            '--end', "-1",
 	            '--right-axis', '1:950',
-	            '--title', nodeName + ' - Temperature, Humidity, Pressure',
+	            '--title', nodeName + ' 30 Day - Temperature, Humidity, Pressure',
 				'--watermark', 'Generated at ' + strftime("%m-%d-%Y %H:%M:%S", time.localtime()),
 	            "DEF:temperature_raw=/home/pi/data/bme280.rrd:temperature:AVERAGE",
 				"DEF:pressure=/home/pi/data/bme280.rrd:pressure:AVERAGE",
 				"DEF:humidity=/home/pi/data/bme280.rrd:humidity:AVERAGE",
 				"CDEF:scaled_pressure=pressure,950,-",
+				"COMMENT:Most Recent Samples\: Temperature - " + str(temperature) + ", Pressure - " + str(pressure) + ", Humidity - " + str(humidity)  + "%",
 				"LINE1:humidity#00FF00:Humidity       ",
 				'GPRINT:humidity:LAST:Last\:%5.2lf %s',
 				"GPRINT:humidity:AVERAGE:Avg\:%5.2lf %s",
@@ -99,10 +104,10 @@ def updateDetailedGraph(lastUpdated, awsS3Bucket, awsS3Key, graphPath):
 	            '--imgformat', 'PNG',
 	            '--width', '500',
 	            '--height', '200',
-	            '--start', "-2592000",
+	            '--start', "-172800",
 	            '--end', "-1",
 	            '--right-axis', '1:950',
-	            '--title', nodeName + ' - Temperature, Humidity, Pressure',
+	            '--title', nodeName + ' - 48 Hour Temperature, Humidity, Pressure',
 				'--watermark', 'Generated at ' + strftime("%m-%d-%Y %H:%M:%S", time.localtime()),
 	            "DEF:temperature_raw=/home/pi/data/bme280.rrd:temperature:AVERAGE",
 				"DEF:temperature_avg=/home/pi/data/bme280.rrd:temperature:AVERAGE:step=86400",
@@ -155,8 +160,12 @@ def s3Upload(targetBucket, targetKey, fromPath ):
 	k.key = targetKey
 	k.set_contents_from_filename(fromPath)
 
+temperature = 0
+pressure = 0
+humidity = 0
 
 def main():
+	global temperature, pressure, humidity
 	sensor = Bme280Sensor()
 
 	warmUp = 0
@@ -174,6 +183,7 @@ def main():
 		time.sleep(1)
 
 	lastUpdated = 0
+	detailedLastUpdated = 0
 	while(1):
 		getOrCreateRrd()
 		temperature,pressure,humidity = sensor.readBME280All()
@@ -186,7 +196,7 @@ def main():
 		logger.info("Updated RRD " + str(ret))
 
 		lastUpdated = updateGraph(lastUpdated, awsS3Bucket, awsS3Key, graphPath)
-
+		detailedLastUpdated = updateDetailedGraph(detailedLastUpdated, awsS3Bucket, awsS3KeyDetailed, detailedGraphPath)
 		time.sleep(10)
 
 if __name__=="__main__":
