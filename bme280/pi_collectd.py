@@ -16,16 +16,15 @@ import logging.handlers
 me = singleton.SingleInstance()	
 
 
-nodeName = "pi-139 bme"
+nodeName = os.environ['NODE_NAME']
 rrdPath = "/home/pi/data/"
 rrdName = "bme280.rrd"
 graphName = "bme280.png"
 
-awsS3Key = "images/pi_139_bme280.png"
+awsS3Key = "images/" + nodeName +".png"
 awsAccessKey = os.environ['AWS_ACCESS_KEY']
 awsSecretKey = os.environ['AWS_SECRETE_KEY']
 awsS3Bucket = os.environ['AWS_BUCKET']
-awsS3Key = "images/pi_139_bme280.png"
 
 rrdFile = rrdPath + rrdName
 graphPath = rrdPath + graphName
@@ -64,15 +63,51 @@ def updateGraph(lastUpdated, awsS3Bucket, awsS3Key, graphPath):
 	            '--imgformat', 'PNG',
 	            '--width', '500',
 	            '--height', '200',
-	            '--start', "-86400",
+	            '--start', "-2592000",
 	            '--end', "-1",
 	            '--right-axis', '1:950',
-	            '--title', 'pi-0-139 BME280 - Temperature, Humidity, Pressure',
+	            '--title', nodeName + ' - Temperature, Humidity, Pressure',
 				'--watermark', 'Generated at ' + strftime("%m-%d-%Y %H:%M:%S", time.localtime()),
 	            "DEF:temperature_raw=/home/pi/data/bme280.rrd:temperature:AVERAGE",
-				"DEF:temperature_avg=/home/pi/data/bme280.rrd:temperature:AVERAGE:step=360",
-				"DEF:temperature_min=/home/pi/data/bme280.rrd:temperature:MIN",
-				"DEF:temperature_max=/home/pi/data/bme280.rrd:temperature:MAX",
+				"DEF:pressure=/home/pi/data/bme280.rrd:pressure:AVERAGE",
+				"DEF:humidity=/home/pi/data/bme280.rrd:humidity:AVERAGE",
+				"CDEF:scaled_pressure=pressure,950,-",
+				"LINE1:humidity#00FF00:Humidity       ",
+				'GPRINT:humidity:LAST:Last\:%5.2lf %s',
+				"GPRINT:humidity:AVERAGE:Avg\:%5.2lf %s",
+				"GPRINT:humidity:MAX:Max\:%5.2lf %s",
+				"GPRINT:humidity:MIN:Min\:%5.2lf %s\\n",
+				"LINE2:scaled_pressure#0000FF:Pressure hpa   ",
+				"GPRINT:pressure:LAST:Last\:%5.3lf %s",
+				"GPRINT:pressure:AVERAGE:Avg\:%5.3lf %s",
+				"GPRINT:pressure:MAX:Max\:%5.3lf %s",
+				"GPRINT:pressure:MIN:Min\:%5.3lf %s\\n",
+				"LINE1:temperature_raw#FF0000:Temperature    ",
+				"GPRINT:temperature_raw:LAST:Last\:%5.2lf %s",
+				"GPRINT:temperature_raw:AVERAGE:Avg\:%5.2lf %s",
+				"GPRINT:temperature_raw:MAX:Max\:%5.2lf %s",
+				"GPRINT:temperature_raw:MIN:Min\:%5.2lf %s\\n",
+	            '--right-axis-format','%1.1lf')
+		s3Upload(awsS3Bucket, awsS3Key, graphPath)
+		return time.time()
+	return lastUpdated
+
+def updateDetailedGraph(lastUpdated, awsS3Bucket, awsS3Key, graphPath):
+	if(time.time() - lastUpdated > 300):
+		logger.info("Updating Graph...")
+		rrdtool.graph(graphPath,
+	            '--imgformat', 'PNG',
+	            '--width', '500',
+	            '--height', '200',
+	            '--start', "-2592000",
+	            '--end', "-1",
+	            '--right-axis', '1:950',
+	            '--title', nodeName + ' - Temperature, Humidity, Pressure',
+				'--watermark', 'Generated at ' + strftime("%m-%d-%Y %H:%M:%S", time.localtime()),
+	            "DEF:temperature_raw=/home/pi/data/bme280.rrd:temperature:AVERAGE",
+				"DEF:temperature_avg=/home/pi/data/bme280.rrd:temperature:AVERAGE:step=86400",
+				"DEF:temperature_min=/home/pi/data/bme280.rrd:temperature:MIN:step=86400",
+				"DEF:temperature_max=/home/pi/data/bme280.rrd:temperature:MAX:step=86400",
 				"DEF:pressure=/home/pi/data/bme280.rrd:pressure:AVERAGE",
 				"DEF:humidity=/home/pi/data/bme280.rrd:humidity:AVERAGE",
 				"CDEF:scaled_pressure=pressure,950,-",
@@ -148,7 +183,7 @@ def main():
 		logger.info("Humidity : " + str(humidity) + "%")
 
 		ret = rrdtool.update(rrdFile, '%s:%s:%s:%s' %(time.time(),temperature, humidity, pressure));
-		logger.info("Updated RRD " + ret)
+		logger.info("Updated RRD " + str(ret))
 
 		lastUpdated = updateGraph(lastUpdated, awsS3Bucket, awsS3Key, graphPath)
 
