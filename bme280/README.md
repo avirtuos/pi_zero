@@ -48,6 +48,17 @@ Grab a copy of the tutorial's python scripts my <a href='https://github.com/avir
 
 You'll want to take a close look at pi_collectd.py as this script requires a few settings, namely. Your AWS Access Key, AWS Secret Key, and the location in S3 to post the graphs to.
 
+These configs are easily configured via environment variable to collectd.py
+
+export NODE_NAME="pi_154_bme280"
+export AWS_ACCESS_KEY="XYZ"
+export AWS_SECRETE_KEY="XYZ"
+export AWS_BUCKET="XYZ"
+export HTTP_PORT="8000"
+/home/pi/projects/pi_zero/bme280/pi_collectd.py
+
+You can disable the embedded web server which makes the rrd graphs available over http by not setting the HTTP_PORT env variable. Similarly, ommitting the AWS environment variables will disable upload of the graphs to S3.
+
 This script uses RRDTool to store up to 5 years of 1 minute, avg, min, and max data for our sensors. It also retains 48 hours of 1 second data since it samples our sensors once a second.
 
 ## Step 4 - Finished
