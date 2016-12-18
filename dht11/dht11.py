@@ -41,8 +41,7 @@ graphPath = rrdPath + graphName
 detailedGraphPath = rrdPath + detailedGraphName
 
 data_sources = ['DS:temperature:GAUGE:600:U:U',
-                'DS:humidity:GAUGE:600:U:U',
-                'DS:pressure:GAUGE:600:U:U' ]
+                'DS:humidity:GAUGE:600:U:U']
 
 
 LOG_FILENAME = '/home/pi/data/' + nodeName  + '.log'
@@ -165,7 +164,7 @@ def getOrCreateRrd():
                 'RRA:AVERAGE:0.5:360:40000')
 
 def updateGraph(lastUpdated, awsS3Bucket, awsS3Key, graphPath):
-    global temperature, pressure, humidity
+    global temperature, humidity
     if(time.time() - lastUpdated > 300):
         logger.info("Updating Graph...")
         rrdtool.graph(graphPath,
@@ -175,23 +174,16 @@ def updateGraph(lastUpdated, awsS3Bucket, awsS3Key, graphPath):
                 '--start', "-10492000",
                 '--end', "-1",
                 '--right-axis', '1:950',
-                '--title', nodeName + ' 120 Day - Temperature, Humidity, Pressure',
+                '--title', nodeName + ' 120 Day - Temperature, Humidity',
                 '--watermark', 'Generated at ' + strftime("%m-%d-%Y %H:%M:%S", time.localtime()),
                 "DEF:temperature_raw="+rrdFile+":temperature:AVERAGE",
-                "DEF:pressure="+rrdFile+":pressure:AVERAGE",
                 "DEF:humidity="+rrdFile+":humidity:AVERAGE",
-                "CDEF:scaled_pressure=pressure,950,-",
-                "COMMENT:Last\: Temperature - " + str(temperature) + ", Pressure - " + str(pressure) + ", Humidity - " + str(humidity)  + "%",
+                "COMMENT:Last\: Temperature - " + str(temperature) + ", Humidity - " + str(humidity)  + "%",
                 "LINE1:humidity#00FF00:Humidity       ",
                 'GPRINT:humidity:LAST:Last\:%5.2lf %s',
                 "GPRINT:humidity:AVERAGE:Avg\:%5.2lf %s",
                 "GPRINT:humidity:MAX:Max\:%5.2lf %s",
                 "GPRINT:humidity:MIN:Min\:%5.2lf %s\\n",
-                "LINE2:scaled_pressure#0000FF:Pressure hpa   ",
-                "GPRINT:pressure:LAST:Last\:%5.3lf %s",
-                "GPRINT:pressure:AVERAGE:Avg\:%5.3lf %s",
-                "GPRINT:pressure:MAX:Max\:%5.3lf %s",
-                "GPRINT:pressure:MIN:Min\:%5.3lf %s\\n",
                 "LINE1:temperature_raw#FF0000:Temperature    ",
                 "GPRINT:temperature_raw:LAST:Last\:%5.2lf %s",
                 "GPRINT:temperature_raw:AVERAGE:Avg\:%5.2lf %s",
@@ -212,23 +204,16 @@ def updateDetailedGraph(lastUpdated, awsS3Bucket, awsS3Key, graphPath):
                 '--start', "-172800",
                 '--end', "-1",
                 '--right-axis', '1:950',
-                '--title', nodeName + ' - 48 Hour Temperature, Humidity, Pressure',
+                '--title', nodeName + ' - 48 Hour Temperature, Humidity',
                 '--watermark', 'Generated at ' + strftime("%m-%d-%Y %H:%M:%S", time.localtime()),
                 "DEF:temperature_raw="+rrdFile+":temperature:AVERAGE",
-                "DEF:pressure="+rrdFile+":pressure:AVERAGE",
                 "DEF:humidity="+rrdFile+":humidity:AVERAGE",
-                "CDEF:scaled_pressure=pressure,950,-",
-                "COMMENT:Last\: Temperature - " + str(temperature) + ", Pressure - " + str(pressure) + ", Humidity - " + str(humidity)  + "%",
+                "COMMENT:Last\: Temperature - " + str(temperature) + ", Humidity - " + str(humidity)  + "%",
                 "LINE1:humidity#00FF00:Humidity       ",
                 'GPRINT:humidity:LAST:Last\:%5.2lf %s',
                 "GPRINT:humidity:AVERAGE:Avg\:%5.2lf %s",
                 "GPRINT:humidity:MAX:Max\:%5.2lf %s",
                 "GPRINT:humidity:MIN:Min\:%5.2lf %s\\n",
-                "LINE2:scaled_pressure#0000FF:Pressure hpa   ",
-                "GPRINT:pressure:LAST:Last\:%5.3lf %s",
-                "GPRINT:pressure:AVERAGE:Avg\:%5.3lf %s",
-                "GPRINT:pressure:MAX:Max\:%5.3lf %s",
-                "GPRINT:pressure:MIN:Min\:%5.3lf %s\\n",
                 "LINE1:temperature_raw#FF0000:Temperature    ",
                 "GPRINT:temperature_raw:LAST:Last\:%5.2lf %s",
                 "GPRINT:temperature_raw:AVERAGE:Avg\:%5.2lf %s",
@@ -322,22 +307,20 @@ def shutdown():
         httpd.server_close()
 
 temperature = 0
-pressure = 0
 humidity = 0
 
 def main():
-    global temperature, pressure, humidity
+    global temperature, humidity
 
     lastUpdated = 0
     detailedLastUpdated = 0
     while(1):
         getOrCreateRrd()
-        pressure = 0    #not supported
         temperature,humidity = readSensor()
         temperature = (temperature * 9/5) + 32
-        logger.info("Temperature : {} F, Pressure: {} hPa, Humidity: {}%".format(temperature,pressure,humidity))
+        logger.info("Temperature : {} F, Humidity: {}%".format(temperature,humidity))
         if(temperature != -1 or humidity != -1):
-            ret = rrdtool.update(rrdFile, '%s:%s:%s:%s' %(time.time(),temperature, humidity, pressure));
+            ret = rrdtool.update(rrdFile, '%s:%s:%s' %(time.time(),temperature, humidity));
             logger.info("Updated RRD " + str(ret))
 
             lastUpdated = updateGraph(lastUpdated, awsS3Bucket, awsS3Key, graphPath)
