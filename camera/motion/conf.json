@@ -1,0 +1,14 @@
+{
+	"show_video": false,
+	"use_dropbox": false,
+	"dropbox_key": "YOUR_DROPBOX_KEY",
+	"dropbox_secret": "YOUR_DROPBOX_SECRET",
+	"dropbox_base_path": "YOUR_DROPBOX_APP_PATH",
+	"min_upload_seconds": 30.0,
+	"min_motion_frames": 2,
+	"camera_warmup_time": 2.5,
+	"delta_thresh": 5,
+	"resolution": [1280,720],
+	"fps": 4,
+	"min_area": 2000
+}
