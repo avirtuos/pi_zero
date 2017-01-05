@@ -5,10 +5,11 @@ This repo is mostly a collection of tutorials built around the raspberry pi zero
 
 # Tutorials
 
-- bme280 - how to use the BME280 I2C Sensor to sample Temperature, Humidity, and Pressure to generate RRD Graphs and optionally publish to AWS S3 or an embedded web server
-- dht11 - similar to bme280 but using a DHT11 sensor and the 1-wire protocol
-- camera - a series of snippets to using the pi zero camera module including motion detection and a 3d printer monitor.
-- 3D Models - a set of handly stl files that you can 3d print to create cases for the various project tutorials in this repo.
+- <a href='https://github.com/avirtuos/pi_zero/tree/master/mpu-9255'>MPU-9255 Tutorial</a> - 9-Axis Accelerometer w/Compass via i2c from Python.
+- <a href='https://github.com/avirtuos/pi_zero/tree/master/bme280'>BME280 Tutorial</a> - Pi Zero IO Platform using RRDTool and AWS S3 to log and graph Temperature, Pressure, and Humidity using the BME280 sensor with the i2c protocol.
+- <a href='https://github.com/avirtuos/pi_zero/tree/master/dht11'>DHT11 Tutorial</a> - Pi Zero IO Platform using RRDTool and AWS S3 to log and graph Temperature, and Humidity using the DHT11 sensor with the 1-wire protocol.
+- <a href='https://github.com/avirtuos/pi_zero/tree/master/camera'>Camera Tutorial</a> - A series of snippets to using the pi zero camera module including motion detection and a 3d printer monitor.
+- <a href='https://github.com/avirtuos/pi_zero/tree/master/3D%20Models'>3D Models</a> - A set of handly stl files that you can 3d print to create cases for the various project tutorials in this repo.
 
 
 # The Good, The Bag, & The Fugly
@@ -40,10 +41,6 @@ Here you can find all the parts used throughout these tutorials, I've tried to m
 * <a href='https://www.amazon.com/gp/product/B01DIGRR8U'>9-Axis Accelorometer / Gyroscope / Compage (~$15)</a> - Used for Robotic Telemetry Tutorial
 * <a href='https://www.amazon.com/Diymall-Pressure-Temperature-Sensor-Arduino/dp/B0118XCKTG'>BME280 Temperature, Pressure, and Humidity (~$9) - Used for BME280 Tutorial, a Pi Zero IOT Platform w/AWS</a>
 
-# Tutorials
-
-- <a href='https://github.com/avirtuos/pi_zero/tree/master/mpu-9255'>MPU-9255 Tutorial</a> - 9-Axis Accelerometer w/Compass via i2c from Python.
-- <a href='https://github.com/avirtuos/pi_zero/tree/master/bme280'>BME280 Tutorial</a> - Pi Zero IO Platform using RRDTool and AWS S3 to log and graph Temperature, Pressure, and Humidity.
 
 # Pi Zero Setup
 
