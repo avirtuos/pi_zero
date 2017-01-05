@@ -3,6 +3,14 @@ This repo is mostly a collection of tutorials built around the raspberry pi zero
 
 <center>![alt tag](https://raw.githubusercontent.com/avirtuos/pi_zero/master/doc/img/pi_zero_pinout.jpg)</center>
 
+# Tutorials
+
+- bme280 - how to use the BME280 I2C Sensor to sample Temperature, Humidity, and Pressure to generate RRD Graphs and optionally publish to AWS S3 or an embedded web server
+- dht11 - similar to bme280 but using a DHT11 sensor and the 1-wire protocol
+- camera - a series of snippets to using the pi zero camera module including motion detection and a 3d printer monitor.
+- 3D Models - a set of handly stl files that you can 3d print to create cases for the various project tutorials in this repo.
+
+
 # The Good, The Bag, & The Fugly
 
 Like most people, I'm a fan of the Raspberry Pi Foundation and what they are trying to do, but also like most people... I'm forever wanting more from the Pi. I actually think its rather cripiling that they don't include wifi in every model given how connected our world has become...but thats a topic for another time.
